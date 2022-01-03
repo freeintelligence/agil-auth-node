@@ -1,6 +1,6 @@
 {
   "name": "agil-auth-node",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Agile authentication for NodeJS",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,13 @@
     "url": "git+https://github.com/freeintelligence/agil-auth-node.git"
   },
   "keywords": [
-    "agil"
+    "agil",
+    "nodejs",
+    "node",
+    "auth",
+    "authentication",
+    "login",
+    "api"
   ],
   "author": {
     "email": "free04381@gmail.com",

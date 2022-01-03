@@ -12,6 +12,7 @@ export class Auth {
    */
   public user: { [key: string]: any } = {};
   private settings: Settings;
+  private token: TokenInterface;
 
   /**
    * Constructor
@@ -52,6 +53,7 @@ export class Auth {
     if (tokenData) {
       const userData = await this.settings.getUserData({ id: tokenData.userId });
       this.user = userData ? userData : null;
+      this.token = { token: tokenData.token, expireAt: tokenData.expireAt };
     }
 
     return this;
@@ -65,18 +67,24 @@ export class Auth {
       return null;
     }
 
-    const token: TokenInterface = { token: Utils.randomString(128), expireAt: this.settings.getNextExpireTimestamp() };
-
-    await this.settings.storeUserToken(this.user.id, token);
+    this.token = { token: Utils.randomString(128), expireAt: this.settings.getNextExpireTimestamp() };
+    await this.settings.storeUserToken(this.user.id, this.token);
 
     return this;
+  }
+
+  /**
+   * Get current token
+   */
+  public getCurrentToken() {
+    return this.token;
   }
 
   /**
    * Logged in
    */
   public check() {
-    return !!(this.user && this.user.id);
+    return !!(this.user && this.user.id && this.token && this.token.token);
   }
 
 }
