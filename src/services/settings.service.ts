@@ -10,7 +10,7 @@ export class Settings {
    * Data
    */
   private tokenLifeTime = 60*60*24*7; // 7 days
-  private sqlCreateTokenTable = `CREATE TABLE IF NOT EXISTS "usertokens" ("userId" INTEGER NOT NULL, "token" TEXT NOT NULL, "expireAt" INTEGER, PRIMARY KEY("userId"));`;
+  private sqlCreateTokenTable = `CREATE TABLE IF NOT EXISTS "usertokens" ("userId" INTEGER NOT NULL, "token" TEXT NOT NULL, "expireAt" INTEGER); CREATE INDEX IF NOT EXISTS index_usertokens_userId ON usertokens (userId ASC);`;
 
   /**
    * Get token life time in seconds
