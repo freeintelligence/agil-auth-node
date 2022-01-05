@@ -52,12 +52,12 @@ export class Auth {
       const userData = await this.settings.getUserData({ id: tokenData.userId });
       const token = new Token(tokenData.userId, this.settings);
 
-      this.user = userData ? userData : null;
       token.userId = tokenData.userId;
       token.token = tokenData.token;
       token.expireAt = tokenData.expireAt;
 
       this.tokens().push(token, true);
+      this.user = userData ? userData : null;
     }
 
     return this;
