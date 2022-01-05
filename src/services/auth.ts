@@ -1,6 +1,7 @@
 import { TokenInterface } from "../interfaces/token.interface";
 import { Utils } from "../utils";
 import { Settings } from "./settings";
+import { Tokens } from "./tokens";
 
 /**
  * Auth class
@@ -15,18 +16,16 @@ export class Auth {
   private token: TokenInterface;
 
   /**
+   * Additional
+   */
+  private _tokens: Tokens;
+
+  /**
    * Constructor
    */
   constructor(settings?: Settings) {
-    this.setSettings(settings);
-  }
-
-  /**
-   * Set settings
-   */
-  public setSettings(settings?: Settings) {
     this.settings = settings instanceof Settings ? settings : new Settings();
-    return this;
+    this._tokens = new Tokens(this.settings);
   }
 
   /**
@@ -48,7 +47,7 @@ export class Auth {
    * Restore user from token
    */
   public async resync(token: string) {
-    const tokenData = await this.settings.getTokenData(token);
+    const tokenData = await this.settings.getUserToken(token);
 
     if (tokenData) {
       const userData = await this.settings.getUserData({ id: tokenData.userId });
@@ -68,7 +67,7 @@ export class Auth {
     }
 
     this.token = { token: Utils.randomString(128), expireAt: this.settings.getNextExpireTimestamp() };
-    await this.settings.storeUserToken(this.user.id, this.token);
+    await this.settings.createUserToken(this.user.id, this.token);
 
     return this;
   }
@@ -78,6 +77,10 @@ export class Auth {
    */
   public getCurrentToken() {
     return this.token;
+  }
+
+  public tokens() {
+    return this._tokens;
   }
 
   /**

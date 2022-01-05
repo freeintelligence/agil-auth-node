@@ -59,7 +59,7 @@ export class Settings {
   /**
    * Store user token
    */
-  public async storeUserToken(userId: number, token: TokenInterface): Promise<void> {
+  public async createUserToken(userId: number, token: TokenInterface): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
@@ -87,17 +87,17 @@ export class Settings {
   }
 
   /**
-   * Set method "storeUserToken"
+   * Set method "createUserToken"
    */
-   public setMethodStoreUserToken(fn: (userId: number, token: TokenInterface) => Promise<void>) {
-    this.storeUserToken = fn;
+   public setMethodCreateUserToken(fn: (userId: number, token: TokenInterface) => Promise<void>) {
+    this.createUserToken = fn;
     return this;
   }
 
   /**
    * Get token data
    */
-  public async getTokenData(token: string): Promise<{ userId: number, token: string, expireAt: number } | null> {
+  public async getUserToken(token: string): Promise<{ userId: number, token: string, expireAt: number } | null> {
     return new Promise((resolve, reject) => {
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
@@ -118,10 +118,10 @@ export class Settings {
   }
 
   /**
-   * Set method "getTokenData"
+   * Set method "getUserToken"
    */
-  public setMethodGetTokenData(fn: (token: string) => Promise<{ userId: number, token: string, expireAt: number } | null>) {
-    this.getTokenData = fn;
+  public setMethodGetUserToken(fn: (token: string) => Promise<{ userId: number, token: string, expireAt: number } | null>) {
+    this.getUserToken = fn;
     return this;
   }
 
