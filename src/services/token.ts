@@ -39,7 +39,7 @@ export class Token {
   }
 
   /**
-   * Random string for token
+   * Random string for token (no $ character)
    * @param len string length
    */
   static random(len: number = 128) {
