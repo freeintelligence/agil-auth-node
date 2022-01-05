@@ -25,11 +25,11 @@ export class Tokens {
   /**
    * Create token
    */
-  public async create() {
+  public async create(setCurrent: boolean = true) {
     const token = new Token(this._userId, this._settings);
     const save = await token.save();
 
-    this.push(save, true);
+    this.push(save, setCurrent);
 
     return save;
   }
