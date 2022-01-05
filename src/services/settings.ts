@@ -1,5 +1,5 @@
 import { TokenInterface } from "../interfaces/token.interface";
-import { db } from './database.service';
+import { db } from './database';
 
 /**
  * Settings

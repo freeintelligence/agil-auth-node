@@ -1,6 +1,6 @@
 import { TokenInterface } from "../interfaces/token.interface";
 import { Utils } from "../utils";
-import { Settings } from "./settings.service";
+import { Settings } from "./settings";
 
 /**
  * Auth class
