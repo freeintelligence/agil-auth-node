@@ -1,6 +1,6 @@
-import { TokenInterface } from "../interfaces/token.interface";
-import { Utils } from "../utils";
+import { User } from "./../interfaces/user.interface";
 import { Settings } from "./settings";
+import { Token } from "./token";
 import { Tokens } from "./tokens";
 
 /**
@@ -11,9 +11,8 @@ export class Auth {
   /**
    * Data
    */
-  public user: { [key: string]: any } = {};
+  public user: User;
   private settings: Settings;
-  private token: TokenInterface;
 
   /**
    * Additional
@@ -25,7 +24,7 @@ export class Auth {
    */
   constructor(settings?: Settings) {
     this.settings = settings instanceof Settings ? settings : new Settings();
-    this._tokens = new Tokens(this.settings);
+    this._tokens = new Tokens(this.user.id, this.settings);
   }
 
   /**
@@ -37,7 +36,7 @@ export class Auth {
     this.user = userData ? userData : null;
 
     if (this.user && this.user.id && generateToken) {
-      await this.createToken();
+      await this.tokens().create();
     }
 
     return this;
@@ -51,34 +50,22 @@ export class Auth {
 
     if (tokenData) {
       const userData = await this.settings.getUserData({ id: tokenData.userId });
+      const token = new Token(tokenData.userId, this.settings);
+
       this.user = userData ? userData : null;
-      this.token = { token: tokenData.token, expireAt: tokenData.expireAt };
+      token.userId = tokenData.userId;
+      token.token = tokenData.token;
+      token.expireAt = tokenData.expireAt;
+
+      this.tokens().push(token, true);
     }
 
     return this;
   }
 
   /**
-   * Generate token user
+   * Tokens manager
    */
-  public async createToken() {
-    if (!this.check()) {
-      return null;
-    }
-
-    this.token = { token: Utils.randomString(128), expireAt: this.settings.getNextExpireTimestamp() };
-    await this.settings.createUserToken(this.user.id, this.token);
-
-    return this;
-  }
-
-  /**
-   * Get current token
-   */
-  public getCurrentToken() {
-    return this.token;
-  }
-
   public tokens() {
     return this._tokens;
   }

@@ -1,4 +1,3 @@
-import { TokenInterface } from "../interfaces/token.interface";
 import { db } from './database';
 
 /**
@@ -59,7 +58,7 @@ export class Settings {
   /**
    * Store user token
    */
-  public async createUserToken(userId: number, token: TokenInterface): Promise<void> {
+  public async createUserToken(userId: string, token: string, expireAt: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
@@ -72,7 +71,7 @@ export class Settings {
               return reject(err);
             }
 
-            stmt.run(userId, token.token, token.expireAt);
+            stmt.run(userId, token, expireAt);
             stmt.finalize((err: Error) => {
               if (err) {
                 return reject(err);
@@ -89,7 +88,7 @@ export class Settings {
   /**
    * Set method "createUserToken"
    */
-   public setMethodCreateUserToken(fn: (userId: number, token: TokenInterface) => Promise<void>) {
+   public setMethodCreateUserToken(fn: (userId: string, token: string, expireAt: number) => Promise<void>) {
     this.createUserToken = fn;
     return this;
   }
@@ -97,7 +96,7 @@ export class Settings {
   /**
    * Get token data
    */
-  public async getUserToken(token: string): Promise<{ userId: number, token: string, expireAt: number } | null> {
+  public async getUserToken(token: string): Promise<{ userId: string, token: string, expireAt: number } | null> {
     return new Promise((resolve, reject) => {
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
@@ -120,7 +119,7 @@ export class Settings {
   /**
    * Set method "getUserToken"
    */
-  public setMethodGetUserToken(fn: (token: string) => Promise<{ userId: number, token: string, expireAt: number } | null>) {
+  public setMethodGetUserToken(fn: (token: string) => Promise<{ userId: string, token: string, expireAt: number } | null>) {
     this.getUserToken = fn;
     return this;
   }

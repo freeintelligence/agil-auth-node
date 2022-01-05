@@ -1,4 +1,3 @@
-import { Utils } from "./../utils";
 import { Settings } from "./settings";
 import { Token } from './token';
 
@@ -11,11 +10,15 @@ export class Tokens {
    * Additional
    */
   private _settings: Settings;
+  private _userId: string;
+  private _list: Token[] = [];
+  private _currentIndex: number;
 
   /**
    * Constructor
    */
-  constructor(settings: Settings) {
+  constructor(userId: string, settings: Settings) {
+    this._userId = userId;
     this._settings = settings;
   }
 
@@ -23,13 +26,36 @@ export class Tokens {
    * Create token
    */
   public async create() {
-    const token: Token = new Token();
-    token.token = Utils.randomString(128);
-    token.expireAt = this._settings.getNextExpireTimestamp();
+    const token = new Token(this._userId, this._settings);
+    const save = await token.save();
 
-    //await this._settings.createUserToken(this.user.id, this.token);
+    this.push(save, true);
 
-    return token;
+    return save;
+  }
+
+  /**
+   * Get current token
+   */
+  public current() {
+    if (typeof this._currentIndex === 'number') {
+      return this._list[this._currentIndex];
+    }
+
+    return null;
+  }
+
+  /**
+   * Push token
+   */
+  public push(token: Token, setCurrent: boolean = false) {
+    this._list.push(token);
+
+    if (setCurrent) {
+      this._currentIndex = this._list.findIndex(e => e.userId == token.userId && e.token == token.token && e.expireAt == token.expireAt);
+    }
+
+    return this;
   }
 
 }
