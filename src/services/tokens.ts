@@ -46,17 +46,21 @@ export class Tokens {
   }
 
   /**
-   * Get all tokens
+   * Get all local tokens
    */
-  public all() {
+  public async all(sync?: boolean) {
+    if (sync) {
+      await this.sync();
+    }
+
     return this._list;
   }
 
   /**
    * Sync tokens database
    */
-  public sync() {
-    
+  public async sync() {
+
   }
 
   /**
