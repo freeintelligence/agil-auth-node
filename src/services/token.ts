@@ -39,6 +39,13 @@ export class Token {
   }
 
   /**
+   * Delete on database
+   */
+  public async delete() {
+    
+  }
+
+  /**
    * Random string for token (no $ character)
    * @param len string length
    */

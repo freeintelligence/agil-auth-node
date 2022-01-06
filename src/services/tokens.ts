@@ -46,6 +46,20 @@ export class Tokens {
   }
 
   /**
+   * Get all tokens
+   */
+  public all() {
+    return this._list;
+  }
+
+  /**
+   * Sync tokens database
+   */
+  public sync() {
+    
+  }
+
+  /**
    * Push token
    */
   public push(token: Token, setCurrent: boolean = false) {
