@@ -46,7 +46,8 @@ export class Auth {
    * Restore user from token
    */
   public async resync(token: string) {
-    const tokenData = await this.settings.getUserToken(token);
+    const tokenDecompose = Token.decompose(token);
+    const tokenData = await this.settings.getUserToken(tokenDecompose.userId, tokenDecompose.token);
 
     if (tokenData) {
       const userData = await this.settings.getUserData({ id: tokenData.userId });

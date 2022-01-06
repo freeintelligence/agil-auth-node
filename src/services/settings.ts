@@ -96,7 +96,7 @@ export class Settings {
   /**
    * Get token data
    */
-  public async getUserToken(token: string): Promise<{ userId: string, token: string, expireAt: number } | null> {
+  public async getUserToken(userId: string, token: string): Promise<{ userId: string, token: string, expireAt: number } | null> {
     return new Promise((resolve, reject) => {
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
@@ -119,7 +119,7 @@ export class Settings {
   /**
    * Set method "getUserToken"
    */
-  public setMethodGetUserToken(fn: (token: string) => Promise<{ userId: string, token: string, expireAt: number } | null>) {
+  public setMethodGetUserToken(fn: (userId: string, token: string) => Promise<{ userId: string, token: string, expireAt: number } | null>) {
     this.getUserToken = fn;
     return this;
   }
