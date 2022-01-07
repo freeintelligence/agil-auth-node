@@ -1,5 +1,11 @@
 import { db } from './database';
 
+interface TokenData {
+  userId: string;
+  token: string;
+  expireAt: number;
+}
+
 /**
  * Settings
  */
@@ -58,8 +64,8 @@ export class Settings {
   /**
    * Store user token
    */
-  public async createUserToken(userId: string, token: string, expireAt: number): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  public async createUserToken(userId: string, token: string, expireAt: number): Promise<TokenData> {
+    return new Promise((resolve, reject) => {
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
           if (err) {
@@ -77,7 +83,7 @@ export class Settings {
                 return reject(err);
               }
 
-              return resolve();
+              return resolve({ userId, token, expireAt });
             });
           });
         });
@@ -88,7 +94,7 @@ export class Settings {
   /**
    * Set method "createUserToken"
    */
-   public setMethodCreateUserToken(fn: (userId: string, token: string, expireAt: number) => Promise<void>) {
+  public setMethodCreateUserToken(fn: (userId: string, token: string, expireAt: number) => Promise<TokenData>) {
     this.createUserToken = fn;
     return this;
   }
@@ -96,15 +102,19 @@ export class Settings {
   /**
    * Get token data
    */
-  public async getUserToken(userId: string, token: string): Promise<{ userId: string, token: string, expireAt: number } | null> {
+  public async getUserToken(userId: string, token: string): Promise<TokenData | null> {
     return new Promise((resolve, reject) => {
+      if (typeof userId === 'undefined' || userId === null || typeof token === 'undefined' || token === null) {
+        return resolve(null);
+      }
+
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
           if (err) {
             return reject(err);
           }
 
-          db.get(`SELECT userId, token, expireAt FROM "usertokens" WHERE token = ? LIMIT 1`, [ token ], (err: Error, row: any) => {
+          db.get(`SELECT userId, token, expireAt FROM "usertokens" WHERE userId = ? AND token = ? LIMIT 1`, [ userId, token ], (err: Error, row: any) => {
             if (err) {
               return reject(err);
             }
@@ -119,8 +129,70 @@ export class Settings {
   /**
    * Set method "getUserToken"
    */
-  public setMethodGetUserToken(fn: (userId: string, token: string) => Promise<{ userId: string, token: string, expireAt: number } | null>) {
+  public setMethodGetUserToken(fn: (userId: string, token: string) => Promise<TokenData | null>) {
     this.getUserToken = fn;
+    return this;
+  }
+
+  /**
+   * Get all user tokens
+   */
+  public async getUserAllTokens(userId: string): Promise<TokenData[]> {
+    return new Promise((resolve, reject) => {
+      db.serialize(() => {
+        db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
+          if (err) {
+            return reject(err);
+          }
+
+          db.all(`SELECT userId, token, expireAt FROM "usertokens" WHERE userId = ?`, [ userId ], (err: Error, rows: any[]) => {
+            if (err) {
+              return reject(err);
+            }
+
+            return resolve(rows);
+          });
+        });
+      });
+    });
+  }
+
+  /**
+   * Set method "getUserAllTokens"
+   */
+  public setMethodGetUserAllTokens(fn: (userId: string) => Promise<TokenData[]>) {
+    this.getUserAllTokens = fn;
+    return this;
+  }
+
+  /**
+   * Delete user token
+   */
+  public async deleteUserToken(userId: string, token: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      db.serialize(() => {
+        db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
+          if (err) {
+            return reject(err);
+          }
+
+          db.run(`DELETE FROM "usertokens" WHERE userId = ? AND token = ?`, [ userId, token ], (err: Error) => {
+            if (err) {
+              return reject(err);
+            }
+
+            return resolve();
+          });
+        });
+      });
+    });
+  }
+
+  /**
+   * Set method "deleteUserToken"
+   */
+  public setMethodDeleteUserToken(fn: (userId: string, token: string) => Promise<void>) {
+    this.deleteUserToken = fn;
     return this;
   }
 
