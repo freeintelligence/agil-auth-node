@@ -46,6 +46,13 @@ export class Token {
   }
 
   /**
+   * Is expired
+   */
+  public isExpired() {
+    return this._settings.getCurrentTimestamp() > this.expireAt;
+  }
+
+  /**
    * Random string for token (no $ character)
    * @param len string length
    */
