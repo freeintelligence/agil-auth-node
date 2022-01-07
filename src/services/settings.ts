@@ -7,6 +7,7 @@ const verbose = sqlite3.verbose();
 interface Database {
   path?: string;
   userTokensFolder?: string;
+  usersFolder?: string;
   instance?: SQLite3Database;
 }
 
@@ -24,9 +25,10 @@ export class Settings {
   /**
    * Data
    */
-  private database: Database = this.mergeDatabase({ path: ':memory:', userTokensFolder: 'usertokens' }).mergeDatabase({ instance: new verbose.Database(this.getDatabase().path) }).getDatabase();
   private tokenLifeTime = 60*60*24*7; // 7 days
-  private sqlCreateTokenTable = `CREATE TABLE IF NOT EXISTS "${this.getDatabase().userTokensFolder}" ("userId" INTEGER NOT NULL, "token" TEXT NOT NULL, "expireAt" INTEGER); CREATE INDEX IF NOT EXISTS index_${this.getDatabase().userTokensFolder}_userId ON ${this.getDatabase().userTokensFolder} (userId ASC);`;
+  private database: Database = this.mergeDatabase({ path: ':memory:', userTokensFolder: 'usertokens', usersFolder: 'users' }).mergeDatabase({ instance: new verbose.Database(this.getDatabase().path) }).getDatabase();
+  private sqlCreateUserTokensTable = `CREATE TABLE IF NOT EXISTS "${this.getDatabase().userTokensFolder}" ("userId" INTEGER NOT NULL, "token" TEXT NOT NULL, "expireAt" INTEGER); CREATE INDEX IF NOT EXISTS index_${this.getDatabase().userTokensFolder}_userId ON ${this.getDatabase().userTokensFolder} (userId ASC);`;
+  private sqlCreateUsersTable = `CREATE TABLE "${this.getDatabase().usersFolder}" ("id"	INTEGER NOT NULL, "username"	INTEGER NOT NULL UNIQUE, "password"	TEXT, "data"	TEXT, PRIMARY KEY("id" AUTOINCREMENT)); CREATE INDEX IF NOT EXISTS index_${this.getDatabase().usersFolder}_id ON ${this.getDatabase().usersFolder} (id ASC);`;
 
   /**
    * Get database settings
@@ -79,7 +81,25 @@ export class Settings {
    * Get user data
    */
   public async getUserData(data: { [key: string]: any } = {}): Promise<{ [key: string]: any }> {
-    throw new Error('Method "getUserData" not implemented.');
+    return new Promise((resolve, reject) => {
+      this.getDatabase().instance.serialize(() => {
+        this.getDatabase().instance.run(this.sqlCreateUserTokensTable, (_result: any, err: Error) => {
+          if (err) {
+            return reject(err);
+          }
+
+          const [ where, values ] = Utils.objectToWhereStatement(data);
+
+          this.getDatabase().instance.get(`SELECT id, username, password, data FROM "${this.getDatabase().usersFolder}" WHERE ${where} LIMIT 1`, values, (err: Error, row: any) => {
+            if (err) {
+              return reject(err);
+            }
+
+            return resolve(row);
+          });
+        });
+      });
+    });
   }
 
   /**
@@ -96,7 +116,7 @@ export class Settings {
   public async createUserToken(userId: any, token: string, expireAt: number): Promise<TokenData> {
     return new Promise((resolve, reject) => {
       this.getDatabase().instance.serialize(() => {
-        this.getDatabase().instance.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
+        this.getDatabase().instance.run(this.sqlCreateUserTokensTable, (_result: any, err: Error) => {
           if (err) {
             return reject(err);
           }
@@ -138,7 +158,7 @@ export class Settings {
       }
 
       this.getDatabase().instance.serialize(() => {
-        this.getDatabase().instance.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
+        this.getDatabase().instance.run(this.sqlCreateUserTokensTable, (_result: any, err: Error) => {
           if (err) {
             return reject(err);
           }
@@ -169,7 +189,7 @@ export class Settings {
   public async getUserAllTokens(userId: any): Promise<TokenData[]> {
     return new Promise((resolve, reject) => {
       this.getDatabase().instance.serialize(() => {
-        this.getDatabase().instance.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
+        this.getDatabase().instance.run(this.sqlCreateUserTokensTable, (_result: any, err: Error) => {
           if (err) {
             return reject(err);
           }
@@ -200,7 +220,7 @@ export class Settings {
   public async deleteUserToken(userId: any, token: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.getDatabase().instance.serialize(() => {
-        this.getDatabase().instance.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
+        this.getDatabase().instance.run(this.sqlCreateUserTokensTable, (_result: any, err: Error) => {
           if (err) {
             return reject(err);
           }

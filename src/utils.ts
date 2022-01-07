@@ -14,4 +14,23 @@ export class Utils {
     return target
   }
 
+  /**
+   * Object to SQL 'where' statement
+   */
+  static objectToWhereStatement(object: { [ key: string]: any }) {
+    let where: string = '', values: any[] = [];
+
+    for (let key in object) {
+      const val = object[key];
+
+      if (where.length) {
+        where += ` AND `;
+      }
+      where += ` ${key} = ? `;
+      values.push(val);
+    }
+
+    return [ where, values ];
+  }
+
 }
