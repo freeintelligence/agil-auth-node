@@ -111,6 +111,56 @@ export class Settings {
   }
 
   /**
+   * Create user data
+   */
+  public async createUserData(data: { [key: string]: any } = {}): Promise<{ [key: string]: any }> {
+    return new Promise((resolve, reject) => {
+      this.getDatabase().instance.serialize(() => {
+        this.getDatabase().instance.run(this.sqlCreateUsersTable, (_result: any, err: Error) => {
+          if (err) {
+            return reject(err);
+          }
+
+          if (typeof data !== 'object' || data === null) {
+            return reject(new Error('undefined "data" on "createUserData".'));
+          }
+
+          if (typeof data.username !== 'string' || !data.username.length) {
+            return reject(new Error('undefined "data.username" on "createUserData".'));
+          }
+
+          if (typeof data.password !== 'string' || !data.password.length) {
+            return reject(new Error('undefined "data.password" on "createUserData".'));
+          }
+
+          if (typeof data.data !== 'object' && typeof data.data !== 'undefined' && data.data !== null) {
+            return reject(new Error('property "data.data" must be an object on "createUserData".'));
+          }
+
+          const jsonData = typeof data.data === 'object' && data.data !== null ? data.data : {};
+          const textData = JSON.stringify(jsonData);
+
+          this.getDatabase().instance.run(`INSERT INTO "${this.getDatabase().usersFolder}" (username, password, data) VALUES (?, ?, ?)`, [ data.username, data.password, textData ], function(err: Error) {
+            if (err) {
+              return reject(err);
+            }
+
+            return resolve({ id: this.lastID, username: data.username, password: data.password, data: jsonData });
+          });
+        });
+      });
+    });
+  }
+
+  /**
+   * Set method "createUserData"
+   */
+  public setMethodCreateUserData(fn: (data: { [key: string]: any; }) => Promise<{ [key: string]: any; }>) {
+    this.createUserData = fn;
+    return this;
+  }
+
+  /**
    * Store user token
    */
   public async createUserToken(userId: any, token: string, expireAt: number): Promise<TokenData> {
