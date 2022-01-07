@@ -182,19 +182,12 @@ export class Settings {
             return reject(err);
           }
 
-          const stmt = this.getDatabase().instance.prepare(`INSERT INTO "${this.getDatabase().userTokensFolder}" VALUES (?, ?, ?)`, (_self: any, err: Error) => {
+          this.getDatabase().instance.run(`INSERT INTO "${this.getDatabase().userTokensFolder}" VALUES (?, ?, ?)`, [ userId, token, expireAt ], function(err: Error) {
             if (err) {
               return reject(err);
             }
 
-            stmt.run(userId, token, expireAt);
-            stmt.finalize((err: Error) => {
-              if (err) {
-                return reject(err);
-              }
-
-              return resolve({ userId, token, expireAt });
-            });
+            return resolve({ userId, token, expireAt });
           });
         });
       });
