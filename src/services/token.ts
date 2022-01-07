@@ -42,7 +42,7 @@ export class Token {
    * Delete on database
    */
   public async delete() {
-    
+    await this._settings.deleteUserToken(this._userId, this.token);
   }
 
   /**
