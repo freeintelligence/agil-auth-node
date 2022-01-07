@@ -66,8 +66,42 @@ export class Tokens {
    * Push token
    */
   public push(token: Token) {
+    token.onDelete = this.onDelete.bind(this);
     this._list.push(token);
+
     return this;
+  }
+
+  /**
+   * Delete all expired tokens
+   */
+  public async deleteExpireds(sync: boolean = true) {
+    if (sync) {
+      await this.sync();
+    }
+
+    for (const token of this.all()) {
+      await token.delete();
+    }
+
+    this._list = [];
+
+    return this;
+  }
+
+  /**
+   * Internal function to remove tokens from container
+   */
+  private onDelete(token: Token) {
+    const index = this.all().findIndex(e => e.userId == token.userId && e.token == token.token && e.expireAt == token.expireAt);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._list.splice(index, 1);
+
+    return true;
   }
 
 }

@@ -19,6 +19,11 @@ export class Token {
   private _userId: any;
 
   /**
+   * Event on delete
+   */
+  public onDelete: (self: Token) => void;
+
+  /**
    * Constructor
    */
    constructor(userId: any, settings: Settings) {
@@ -43,6 +48,10 @@ export class Token {
    */
   public async delete() {
     await this._settings.deleteUserToken(this._userId, this.token);
+
+    if (typeof this.onDelete === 'function') {
+      this.onDelete(this);
+    }
   }
 
   /**
