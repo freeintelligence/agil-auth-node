@@ -15,10 +15,6 @@ export class Auth {
   public get user() { return this._user };
   public set user(value: User) { this._user = value; this.settings.getHiddenFields().forEach(field => Object.defineProperty(this._user, field, { enumerable: false, writable: true })); }
   private settings: Settings;
-
-  /**
-   * Additional
-   */
   private _tokens: Tokens;
 
   /**
@@ -26,7 +22,6 @@ export class Auth {
    */
   constructor(settings?: Settings) {
     this.settings = settings instanceof Settings ? settings : new Settings();
-    this._tokens = new Tokens(this.user.id, this.settings);
   }
 
   /**
@@ -72,6 +67,10 @@ export class Auth {
    * Tokens manager
    */
   public tokens() {
+    if (!this._tokens) {
+      this._tokens = new Tokens(this.user.id, this.settings)
+    }
+
     return this._tokens;
   }
 
