@@ -25,34 +25,26 @@ export class Tokens {
   /**
    * Create token
    */
-  public async create(setCurrent: boolean = true) {
+  public async create() {
     const token = new Token(this._userId, this._settings);
     const save = await token.save();
 
-    this.push(save, setCurrent);
+    this.push(save);
 
     return save;
   }
 
   /**
-   * Get current token
+   * Has a token
    */
-  public current() {
-    if (typeof this._currentIndex === 'number') {
-      return this._list[this._currentIndex];
-    }
-
-    return null;
+  public hasToken(token: string) {
+    return this._list.findIndex(e => e.token == token && e.userId == this._userId) !== -1;
   }
 
   /**
    * Get all local tokens
    */
-  public async all(sync?: boolean) {
-    if (sync) {
-      await this.sync();
-    }
-
+  public all() {
     return this._list;
   }
 
@@ -60,19 +52,22 @@ export class Tokens {
    * Sync tokens database
    */
   public async sync() {
+    this._list = (await this._settings.getUserAllTokens(this._userId)).map(e => {
+      const token = new Token(this._userId, this._settings);
+      token.userId = e.userId;
+      token.token = e.token;
+      token.expireAt = e.expireAt;
+      return token;
+    });
 
+    return this;
   }
 
   /**
    * Push token
    */
-  public push(token: Token, setCurrent: boolean = false) {
+  public push(token: Token) {
     this._list.push(token);
-
-    if (setCurrent) {
-      this._currentIndex = this._list.findIndex(e => e.userId == token.userId && e.token == token.token && e.expireAt == token.expireAt);
-    }
-
     return this;
   }
 

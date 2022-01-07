@@ -57,7 +57,7 @@ export class Auth {
       token.token = tokenData.token;
       token.expireAt = tokenData.expireAt;
 
-      this.tokens().push(token, true);
+      this.tokens().push(token);
       this.user = userData ? userData : null;
     }
 
