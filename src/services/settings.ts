@@ -95,7 +95,18 @@ export class Settings {
               return reject(err);
             }
 
-            return resolve(row);
+            if (!row) {
+              return resolve(null);
+            }
+
+            const userData = {
+              id: row.id,
+              username: row.username,
+              password: row.password,
+              data: typeof row.data === 'object' && row.data !== null ? JSON.parse(row.data) : {},
+            }
+
+            return resolve(userData);
           });
         });
       });
