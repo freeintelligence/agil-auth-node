@@ -37,7 +37,7 @@ export class Tokens {
   /**
    * Has a token
    */
-  public hasToken(token: string) {
+  public has(token: string) {
     return this._list.findIndex(e => e.token == token && e.userId == this._userId) !== -1;
   }
 
