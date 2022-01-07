@@ -80,14 +80,14 @@ export class Settings {
   /**
    * Compare attempt to auth
    */
-  public compareAttempt(toCompare: { [key: string]: any }, userData: { [key: string]: any }): boolean {
-    return toCompare.password === userData.password;
+  public compareAttempt(toCompare: { [key: string]: any }, rawUserData: { [key: string]: any }): boolean {
+    return toCompare.password === rawUserData.password;
   }
 
   /**
    * Set method "compareAttempt"
    */
-  public setMethodCompareAttempt(fn: (toCompare: { [key: string]: any }, userData: { [key: string]: any }) => boolean) {
+  public setMethodCompareAttempt(fn: (toCompare: { [key: string]: any }, rawUserData: { [key: string]: any }) => boolean) {
     this.compareAttempt = fn;
     return this;
   }
