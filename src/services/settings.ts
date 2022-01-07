@@ -78,6 +78,21 @@ export class Settings {
   }
 
   /**
+   * Compare attempt to auth
+   */
+  public compareAttempt(toCompare: { [key: string]: any }, userData: { [key: string]: any }): boolean {
+    return toCompare.password === userData.password;
+  }
+
+  /**
+   * Set method "compareAttempt"
+   */
+  public setMethodCompareAttempt(fn: (toCompare: { [key: string]: any }, userData: { [key: string]: any }) => boolean) {
+    this.compareAttempt = fn;
+    return this;
+  }
+
+  /**
    * Get user data
    */
   public async getUserData(data: { [key: string]: any } = {}): Promise<{ [key: string]: any }> {

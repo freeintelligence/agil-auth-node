@@ -30,13 +30,15 @@ export class Auth {
   /**
    * Attempt user
    */
-  public async attempt(data: { [key: string]: string | number } = {}, generateToken: boolean = true) {
-    const userData = await this.settings.getUserData(data);
+  public async attempt(toSearch: { [key: string]: any }, toCompare: { [key: string]: any }, generateToken: boolean = true) {
+    const userData = await this.settings.getUserData(toSearch);
 
-    this.user = userData ? userData : null;
+    if (this.settings.compareAttempt(toCompare, userData)) {
+      this.user = userData ? userData : null;
 
-    if (this.user && this.user.id && generateToken) {
-      await this.tokens().create();
+      if (this.user && this.user.id && generateToken) {
+        await this.tokens().create();
+      }
     }
 
     return this;
