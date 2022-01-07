@@ -83,7 +83,7 @@ export class Settings {
   public async getUserData(data: { [key: string]: any } = {}): Promise<{ [key: string]: any }> {
     return new Promise((resolve, reject) => {
       this.getDatabase().instance.serialize(() => {
-        this.getDatabase().instance.run(this.sqlCreateUserTokensTable, (_result: any, err: Error) => {
+        this.getDatabase().instance.run(this.sqlCreateUsersTable, (_result: any, err: Error) => {
           if (err) {
             return reject(err);
           }
