@@ -10,14 +10,13 @@ export class Tokens {
    * Additional
    */
   private _settings: Settings;
-  private _userId: string;
+  private _userId: any;
   private _list: Token[] = [];
-  private _currentIndex: number;
 
   /**
    * Constructor
    */
-  constructor(userId: string, settings: Settings) {
+  constructor(userId: any, settings: Settings) {
     this._userId = userId;
     this._settings = settings;
   }

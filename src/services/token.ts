@@ -8,7 +8,7 @@ export class Token {
   /**
    * Data
    */
-  public userId: string;
+  public userId: any;
   public token: string;
   public expireAt: number;
 
@@ -16,12 +16,12 @@ export class Token {
    * Additional
    */
   private _settings: Settings;
-  private _userId: string;
+  private _userId: any;
 
   /**
    * Constructor
    */
-   constructor(userId: string, settings: Settings) {
+   constructor(userId: any, settings: Settings) {
     this._userId = userId;
     this._settings = settings;
 
@@ -65,7 +65,7 @@ export class Token {
    * @param len token length
    * @returns a user token
    */
-  static generate(userId: string, len: number = 128) {
+  static generate(userId: any, len: number = 128) {
     const rand = this.random(len);
     return `${userId}$${rand}`;
   }

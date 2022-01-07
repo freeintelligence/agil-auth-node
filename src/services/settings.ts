@@ -1,7 +1,7 @@
 import { db } from './database';
 
 interface TokenData {
-  userId: string;
+  userId: any;
   token: string;
   expireAt: number;
 }
@@ -64,7 +64,7 @@ export class Settings {
   /**
    * Store user token
    */
-  public async createUserToken(userId: string, token: string, expireAt: number): Promise<TokenData> {
+  public async createUserToken(userId: any, token: string, expireAt: number): Promise<TokenData> {
     return new Promise((resolve, reject) => {
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
@@ -94,7 +94,7 @@ export class Settings {
   /**
    * Set method "createUserToken"
    */
-  public setMethodCreateUserToken(fn: (userId: string, token: string, expireAt: number) => Promise<TokenData>) {
+  public setMethodCreateUserToken(fn: (userId: any, token: string, expireAt: number) => Promise<TokenData>) {
     this.createUserToken = fn;
     return this;
   }
@@ -102,7 +102,7 @@ export class Settings {
   /**
    * Get token data
    */
-  public async getUserToken(userId: string, token: string): Promise<TokenData | null> {
+  public async getUserToken(userId: any, token: string): Promise<TokenData | null> {
     return new Promise((resolve, reject) => {
       if (typeof userId === 'undefined' || userId === null || typeof token === 'undefined' || token === null) {
         return resolve(null);
@@ -129,7 +129,7 @@ export class Settings {
   /**
    * Set method "getUserToken"
    */
-  public setMethodGetUserToken(fn: (userId: string, token: string) => Promise<TokenData | null>) {
+  public setMethodGetUserToken(fn: (userId: any, token: string) => Promise<TokenData | null>) {
     this.getUserToken = fn;
     return this;
   }
@@ -137,7 +137,7 @@ export class Settings {
   /**
    * Get all user tokens
    */
-  public async getUserAllTokens(userId: string): Promise<TokenData[]> {
+  public async getUserAllTokens(userId: any): Promise<TokenData[]> {
     return new Promise((resolve, reject) => {
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
@@ -160,7 +160,7 @@ export class Settings {
   /**
    * Set method "getUserAllTokens"
    */
-  public setMethodGetUserAllTokens(fn: (userId: string) => Promise<TokenData[]>) {
+  public setMethodGetUserAllTokens(fn: (userId: any) => Promise<TokenData[]>) {
     this.getUserAllTokens = fn;
     return this;
   }
@@ -168,7 +168,7 @@ export class Settings {
   /**
    * Delete user token
    */
-  public async deleteUserToken(userId: string, token: string): Promise<void> {
+  public async deleteUserToken(userId: any, token: string): Promise<void> {
     return new Promise((resolve, reject) => {
       db.serialize(() => {
         db.run(this.sqlCreateTokenTable, (_result: any, err: Error) => {
@@ -191,7 +191,7 @@ export class Settings {
   /**
    * Set method "deleteUserToken"
    */
-  public setMethodDeleteUserToken(fn: (userId: string, token: string) => Promise<void>) {
+  public setMethodDeleteUserToken(fn: (userId: any, token: string) => Promise<void>) {
     this.deleteUserToken = fn;
     return this;
   }
