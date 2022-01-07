@@ -3,5 +3,5 @@ export interface User {
   id?: string;
   username?: string;
   password?: string;
-  data?: any;
+  data?: { [key: string]: any };
 }
