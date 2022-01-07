@@ -26,6 +26,7 @@ export class Settings {
    * Data
    */
   private tokenLifeTime = 60*60*24*7; // 7 days
+  private hideFields: string[] = [ 'password' ];
   private database: Database = this.mergeDatabase({ path: ':memory:', userTokensFolder: 'usertokens', usersFolder: 'users' }).mergeDatabase({ instance: new verbose.Database(this.getDatabase().path) }).getDatabase();
   private sqlCreateUserTokensTable = `CREATE TABLE IF NOT EXISTS "${this.getDatabase().userTokensFolder}" ("userId" INTEGER NOT NULL, "token" TEXT NOT NULL, "expireAt" INTEGER); CREATE INDEX IF NOT EXISTS index_${this.getDatabase().userTokensFolder}_userId ON ${this.getDatabase().userTokensFolder} (userId ASC);`;
   private sqlCreateUsersTable = `CREATE TABLE "${this.getDatabase().usersFolder}" ("id"	INTEGER NOT NULL, "username"	INTEGER NOT NULL UNIQUE, "password"	TEXT, "data"	TEXT, PRIMARY KEY("id" AUTOINCREMENT)); CREATE INDEX IF NOT EXISTS index_${this.getDatabase().usersFolder}_id ON ${this.getDatabase().usersFolder} (id ASC);`;
@@ -35,6 +36,22 @@ export class Settings {
    */
   public getDatabase(): Database {
     return this.database;
+  }
+
+  /**
+   * Set hidden fields
+   */
+  public setHiddenFields(...fields: string[]) {
+    this.hideFields = fields;
+
+    return this;
+  }
+
+  /**
+   * Get hidden fields
+   */
+  public getHiddenFields() {
+    return this.hideFields;
   }
 
   /**

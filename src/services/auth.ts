@@ -11,7 +11,9 @@ export class Auth {
   /**
    * Data
    */
-  public user: User;
+  private _user: User;
+  public get user() { return this._user };
+  public set user(value: User) { this._user = value; this.settings.getHiddenFields().forEach(field => Object.defineProperty(this._user, field, { enumerable: false, writable: true })); }
   private settings: Settings;
 
   /**
