@@ -78,7 +78,7 @@ export class Auth {
    * Logged in
    */
   public check() {
-    return !!(this.user && this.user.id);
+    return !!(this.user && this.tokens().all().length);
   }
 
 }

@@ -1,6 +1,6 @@
 {
   "name": "agil-auth-node",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Agile authentication for NodeJS",
   "main": "dist/index.js",
   "scripts": {
